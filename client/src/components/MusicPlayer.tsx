@@ -4,6 +4,16 @@ import ProgressSlider from './ui/progress-slider';
 import VolumeSlider from './ui/volume-slider';
 // import { usePlayerContext } from '@/context/PlayerContext';
 
+// Define a simplified Track type for use in the mock player
+interface Track {
+  name: string;
+  album: {
+    name: string;
+    images: Array<{ url: string; height: number; width: number }>;
+  };
+  artists: Array<{ id: string; name: string }>;
+}
+
 // Simplified MusicPlayer component that doesn't use PlayerContext (temporary)
 const MusicPlayer: React.FC = () => {
   // Mock data for now until we fix context issues
@@ -37,7 +47,7 @@ const MusicPlayer: React.FC = () => {
   }
   
   // Mock track data for development
-  const mockTrack = {
+  const mockTrack: Track = {
     name: "Sample Track",
     album: {
       name: "Sample Album",
@@ -52,14 +62,14 @@ const MusicPlayer: React.FC = () => {
         {/* Currently Playing Song Info */}
         <div className="flex items-center w-1/3">
           <img 
-            src={currentTrack.album.images[0]?.url || ''} 
-            alt={`${currentTrack.album.name} album art`} 
+            src={mockTrack.album.images[0]?.url || ''} 
+            alt={`${mockTrack.album.name} album art`} 
             className="h-14 w-14 rounded-md shadow-lg mr-3" 
           />
           <div className="mr-4">
-            <h4 className="font-medium text-sm truncate max-w-[120px] md:max-w-xs">{currentTrack.name}</h4>
+            <h4 className="font-medium text-sm truncate max-w-[120px] md:max-w-xs">{mockTrack.name}</h4>
             <p className="text-xs text-gray-400 truncate max-w-[120px] md:max-w-xs">
-              {currentTrack.artists.map((artist: {id: string, name: string}) => artist.name).join(', ')}
+              {mockTrack.artists.map((artist: {id: string, name: string}) => artist.name).join(', ')}
             </p>
           </div>
           <div className="flex items-center">
