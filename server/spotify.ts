@@ -3,7 +3,10 @@ import { SpotifyAuth } from "@shared/schema";
 // Spotify API credentials - these should come from environment variables
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID || "";
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || "";
-const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI || "http://localhost:5000";
+
+// Use a more generic redirect URI that is more likely to be configured correctly in Spotify
+// This should match what you've registered in the Spotify Developer Dashboard
+const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI || "http://localhost:5000/callback";
 
 // Spotify API URLs
 const AUTH_URL = "https://accounts.spotify.com/authorize";

@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
@@ -6,6 +6,17 @@ import {
   exchangeSpotifyCode, 
   refreshSpotifyToken 
 } from "./spotify";
+
+// Extend the express Request type to include session
+declare module 'express-serve-static-core' {
+  interface Request {
+    session?: {
+      spotifyToken?: string;
+      spotifyRefreshToken?: string;
+      [key: string]: any;
+    };
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up Spotify authentication routes
@@ -58,6 +69,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error refreshing token:", error);
       res.status(500).json({ message: "Failed to refresh token" });
+    }
+  });
+  
+  // Handle Spotify callback
+  app.get("/api/spotify/callback", async (req, res) => {
+    try {
+      const { code } = req.query;
+      
+      if (!code || typeof code !== 'string') {
+        return res.status(400).json({ message: "Authorization code is required" });
+      }
+      
+      // Exchange code for token
+      const redirectUri = process.env.SPOTIFY_REDIRECT_URI || "";
+      const tokenResponse = await exchangeSpotifyCode(code, redirectUri);
+      
+      // In a production app, we'd store tokens in the user's session
+      if (req.session) {
+        req.session.spotifyToken = tokenResponse.access_token;
+        req.session.spotifyRefreshToken = tokenResponse.refresh_token;
+      }
+      
+      // Redirect to the frontend with the token data
+      // For simplicity, we'll include them as URL parameters
+      // In a real app, you might use a more secure approach
+      const params = new URLSearchParams({
+        access_token: tokenResponse.access_token,
+        refresh_token: tokenResponse.refresh_token,
+        expires_in: tokenResponse.expires_in.toString(),
+      });
+      
+      res.redirect(`/?${params.toString()}`);
+    } catch (error) {
+      console.error("Error in Spotify callback:", error);
+      res.redirect(`/error?message=Authentication failed`);
     }
   });
 
