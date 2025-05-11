@@ -6,7 +6,7 @@ import { getAuthUrl, searchSpotify, getAvailableGenreSeeds } from '@/lib/spotify
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useQuery } from '@tanstack/react-query';
-// import { usePlayerContext } from '@/context/PlayerContext';
+import { usePlayerContext } from '@/context/PlayerContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Track type for search results
@@ -47,6 +47,7 @@ const Search: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchGenre, setSearchGenre] = useState('');
   const [localSearchQuery, setLocalSearchQuery] = useState('');
+  const playerContext = usePlayerContext();
   
   // Check if user is authenticated
   useEffect(() => {
@@ -102,11 +103,10 @@ const Search: React.FC = () => {
   
   // Play a track
   const handlePlayTrack = (track: Track) => {
-    console.log('Would play track:', track);
-    // Temporarily commented out until player context issues are fixed
-    // if (playerContext) {
-    //   playerContext.play(track);
-    // }
+    console.log('Playing track:', track);
+    if (playerContext) {
+      playerContext.play(track);
+    }
   };
   
   // Login function
@@ -132,12 +132,12 @@ const Search: React.FC = () => {
           {/* Search bar */}
           <form onSubmit={handleSearch} className="mb-8">
             <div className="flex gap-2">
-              <Input
+              <input
                 type="text"
                 placeholder="Search for songs, artists, or albums"
                 value={localSearchQuery}
                 onChange={(e) => setLocalSearchQuery(e.target.value)}
-                className="bg-card"
+                className="w-full px-3 py-2 bg-card border border-border rounded-md text-white"
               />
               <Button type="submit">Search</Button>
             </div>

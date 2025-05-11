@@ -6,7 +6,7 @@ import AlbumCard from '@/components/ui/album-card';
 import { getAuthUrl, getRecommendations, getRecentlyPlayed } from '@/lib/spotify';
 import { Button } from '@/components/ui/button';
 // Comment out for now to debug the context issue
-// import { usePlayerContext } from '@/context/PlayerContext';
+import { usePlayerContext } from '@/context/PlayerContext';
 
 // Define track type to match the format from Spotify API
 interface RecommendationTrack {
@@ -25,8 +25,8 @@ interface RecommendationTrack {
 const Home: React.FC = () => {
   // Temporary state to replace SpotifyContext
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // Commented out temporarily to debug context issues
-  // const playerContext = usePlayerContext();
+  // Get player context for music playback
+  const playerContext = usePlayerContext();
   
   useEffect(() => {
     const token = localStorage.getItem('spotify_token');
@@ -59,11 +59,10 @@ const Home: React.FC = () => {
   
   // Handle track play
   const handlePlay = (track: RecommendationTrack) => {
-    console.log('Would play track:', track);
-    // Commented out until context issues are fixed
-    // if (playerContext && track) {
-    //   playerContext.play(track);
-    // }
+    console.log('Playing track:', track);
+    if (playerContext && track) {
+      playerContext.play(track);
+    }
   };
   
   // Simplified genres for the demo

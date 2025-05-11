@@ -4,7 +4,7 @@ import MainContent from '@/components/MainContent';
 import { getAuthUrl, getUserPlaylists, getPlaylistTracks, getPlaylist } from '@/lib/spotify';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-// import { usePlayerContext } from '@/context/PlayerContext';
+import { usePlayerContext } from '@/context/PlayerContext';
 
 // Define types for playlists and tracks
 interface Playlist {
@@ -39,8 +39,8 @@ interface Track {
 const Library: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
-  // Temporarily removed player context until we fix context issues
-  // const playerContext = usePlayerContext();
+  // Get player context for controlling playback
+  const playerContext = usePlayerContext();
   
   useEffect(() => {
     const token = localStorage.getItem('spotify_token');
@@ -201,9 +201,8 @@ const Library: React.FC = () => {
                               };
                               // Play the song using the PlayerContext's play method
                               try {
-                                // Temporarily commented out until player context is fixed
-                                // playerContext.play(trackToPlay);
-                                console.log('Would play track:', trackToPlay);
+                                playerContext.play(trackToPlay);
+                                console.log('Playing track:', trackToPlay);
                               } catch (error) {
                                 console.error('Failed to play track', error);
                               }

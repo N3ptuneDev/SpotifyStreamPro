@@ -2,31 +2,23 @@ import React from 'react';
 import AudioVisualizer from './ui/audio-visualizer';
 import ProgressSlider from './ui/progress-slider';
 import VolumeSlider from './ui/volume-slider';
-// import { usePlayerContext } from '@/context/PlayerContext';
+import { usePlayerContext } from '@/context/PlayerContext';
 
-// Define a simplified Track type for use in the mock player
-interface Track {
-  name: string;
-  album: {
-    name: string;
-    images: Array<{ url: string; height: number; width: number }>;
-  };
-  artists: Array<{ id: string; name: string }>;
-}
-
-// Simplified MusicPlayer component that doesn't use PlayerContext (temporary)
+// MusicPlayer component that uses PlayerContext
 const MusicPlayer: React.FC = () => {
-  // Mock data for now until we fix context issues
-  const currentTrack = null;
-  const isPlaying = false;
-  const volume = 70;
-  const progress = 0;
-  const duration = 0;
-  const togglePlayback = () => console.log('Toggle playback');
-  const previous = () => console.log('Previous track');
-  const next = () => console.log('Next track');
-  const setProgress = () => console.log('Set progress');
-  const setPlayerVolume = () => console.log('Set volume');
+  // Get context data
+  const { 
+    currentTrack, 
+    isPlaying, 
+    volume, 
+    progress, 
+    duration,
+    togglePlayback,
+    previous,
+    next,
+    setProgress,
+    setPlayerVolume
+  } = usePlayerContext();
 
   // Format time in MM:SS
   const formatTime = (ms: number) => {
@@ -45,16 +37,6 @@ const MusicPlayer: React.FC = () => {
       </div>
     );
   }
-  
-  // Mock track data for development
-  const mockTrack: Track = {
-    name: "Sample Track",
-    album: {
-      name: "Sample Album",
-      images: [{ url: "", height: 300, width: 300 }]
-    },
-    artists: [{ id: "1", name: "Sample Artist" }]
-  };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 bg-dark-bg bg-opacity-95 backdrop-blur-md border-t border-white border-opacity-10 px-4 z-10">
@@ -62,14 +44,14 @@ const MusicPlayer: React.FC = () => {
         {/* Currently Playing Song Info */}
         <div className="flex items-center w-1/3">
           <img 
-            src={mockTrack.album.images[0]?.url || ''} 
-            alt={`${mockTrack.album.name} album art`} 
+            src={currentTrack.album.images[0]?.url || ''} 
+            alt={`${currentTrack.album.name} album art`} 
             className="h-14 w-14 rounded-md shadow-lg mr-3" 
           />
           <div className="mr-4">
-            <h4 className="font-medium text-sm truncate max-w-[120px] md:max-w-xs">{mockTrack.name}</h4>
+            <h4 className="font-medium text-sm truncate max-w-[120px] md:max-w-xs">{currentTrack.name}</h4>
             <p className="text-xs text-gray-400 truncate max-w-[120px] md:max-w-xs">
-              {mockTrack.artists.map((artist: {id: string, name: string}) => artist.name).join(', ')}
+              {currentTrack.artists.map((artist: {id: string, name: string}) => artist.name).join(', ')}
             </p>
           </div>
           <div className="flex items-center">

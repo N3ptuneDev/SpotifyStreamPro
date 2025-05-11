@@ -5,8 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import App from "./App";
 import "./index.css";
-import { SpotifyProvider } from "./context/SpotifyContext";
-import { PlayerProvider } from "./context/PlayerContext";
 
 // For debugging
 console.log("Mounting application with context providers");
@@ -16,12 +14,8 @@ const root = createRoot(document.getElementById("root")!);
 root.render(
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <SpotifyProvider>
-        <PlayerProvider>
-          <Toaster />
-          <App />
-        </PlayerProvider>
-      </SpotifyProvider>
+      <Toaster />
+      <App />
     </TooltipProvider>
   </QueryClientProvider>
 );
