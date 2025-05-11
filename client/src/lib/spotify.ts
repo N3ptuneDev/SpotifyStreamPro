@@ -129,6 +129,16 @@ export const getLikedSongs = async (limit = 50) => {
   return response.json();
 };
 
+export const getPlaylistTracks = async (playlistId: string, limit = 50, offset = 0) => {
+  const response = await fetchWithToken(`/playlists/${playlistId}/tracks?limit=${limit}&offset=${offset}`);
+  return response.json();
+};
+
+export const getPlaylist = async (playlistId: string) => {
+  const response = await fetchWithToken(`/playlists/${playlistId}`);
+  return response.json();
+};
+
 export const getAvailableGenreSeeds = async () => {
   const response = await fetchWithToken("/recommendations/available-genre-seeds");
   return response.json();

@@ -1,37 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import AudioVisualizer from './ui/audio-visualizer';
 import ProgressSlider from './ui/progress-slider';
 import VolumeSlider from './ui/volume-slider';
+import { usePlayerContext } from '@/context/PlayerContext';
 
-// Define a simplified Track type
-interface SimpleTrack {
-  id: string;
-  name: string;
-  artists: Array<{ id: string; name: string }>;
-  album: {
-    id: string;
-    name: string;
-    images: Array<{ url: string; height: number; width: number }>;
-  };
-  duration_ms: number;
-  uri: string;
-}
-
-// Temporary simplified MusicPlayer
+// MusicPlayer component that uses PlayerContext
 const MusicPlayer: React.FC = () => {
-  // Simplified state for the music player
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(70);
-  const [progress, setProgressState] = useState(0);
-  const [currentTrack, setCurrentTrack] = useState<SimpleTrack | null>(null);
-  const duration = 0;
-  
-  // Placeholder functions
-  const togglePlayback = () => setIsPlaying(!isPlaying);
-  const previous = () => console.log('Previous track');
-  const next = () => console.log('Next track');
-  const setProgress = (value: number) => setProgressState(value);
-  const setPlayerVolume = (value: number) => setVolume(value);
+  const { 
+    currentTrack, 
+    isPlaying, 
+    volume, 
+    progress, 
+    duration,
+    togglePlayback,
+    previous,
+    next,
+    setProgress,
+    setPlayerVolume
+  } = usePlayerContext();
 
   // Format time in MM:SS
   const formatTime = (ms: number) => {
