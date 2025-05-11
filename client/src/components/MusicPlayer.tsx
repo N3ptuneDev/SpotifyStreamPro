@@ -3,13 +3,27 @@ import AudioVisualizer from './ui/audio-visualizer';
 import ProgressSlider from './ui/progress-slider';
 import VolumeSlider from './ui/volume-slider';
 
+// Define a simplified Track type
+interface SimpleTrack {
+  id: string;
+  name: string;
+  artists: Array<{ id: string; name: string }>;
+  album: {
+    id: string;
+    name: string;
+    images: Array<{ url: string; height: number; width: number }>;
+  };
+  duration_ms: number;
+  uri: string;
+}
+
 // Temporary simplified MusicPlayer
 const MusicPlayer: React.FC = () => {
   // Simplified state for the music player
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(70);
   const [progress, setProgressState] = useState(0);
-  const currentTrack = null; // No track initially
+  const [currentTrack, setCurrentTrack] = useState<SimpleTrack | null>(null);
   const duration = 0;
   
   // Placeholder functions
@@ -50,7 +64,7 @@ const MusicPlayer: React.FC = () => {
           <div className="mr-4">
             <h4 className="font-medium text-sm truncate max-w-[120px] md:max-w-xs">{currentTrack.name}</h4>
             <p className="text-xs text-gray-400 truncate max-w-[120px] md:max-w-xs">
-              {currentTrack.artists.map(artist => artist.name).join(', ')}
+              {currentTrack.artists.map((artist: {id: string, name: string}) => artist.name).join(', ')}
             </p>
           </div>
           <div className="flex items-center">

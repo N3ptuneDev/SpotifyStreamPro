@@ -3,6 +3,15 @@ import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { getUserPlaylists, getAuthUrl } from '@/lib/spotify';
 
+// Define a playlist type
+interface Playlist {
+  id: string;
+  name: string;
+  owner: {
+    display_name: string;
+  };
+}
+
 const Sidebar: React.FC = () => {
   const [location] = useLocation();
   // Temporary state to replace SpotifyContext
@@ -29,7 +38,8 @@ const Sidebar: React.FC = () => {
     enabled: isAuthenticated,
   });
 
-  const playlists = playlistsData?.items || [];
+  // Ensure playlists is an array of Playlist objects or an empty array
+  const playlists: Playlist[] = playlistsData?.items || [];
 
   return (
     <div className="hidden md:flex md:w-64 bg-dark-bg bg-opacity-90 flex-col h-screen">
@@ -46,34 +56,34 @@ const Sidebar: React.FC = () => {
         <ul className="space-y-2">
           <li>
             <Link href="/">
-              <a className={`flex items-center px-4 py-3 rounded-lg ${location === '/' ? 'bg-white bg-opacity-10 text-white' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 transition-all'}`}>
+              <div className={`flex items-center px-4 py-3 rounded-lg ${location === '/' ? 'bg-white bg-opacity-10 text-white' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 transition-all'}`}>
                 <i className="ri-home-5-fill mr-3 text-xl"></i>
                 <span className="font-medium">Home</span>
-              </a>
+              </div>
             </Link>
           </li>
           <li>
             <Link href="/search">
-              <a className={`flex items-center px-4 py-3 rounded-lg ${location === '/search' ? 'bg-white bg-opacity-10 text-white' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 transition-all'}`}>
+              <div className={`flex items-center px-4 py-3 rounded-lg ${location === '/search' ? 'bg-white bg-opacity-10 text-white' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 transition-all'}`}>
                 <i className="ri-search-line mr-3 text-xl"></i>
                 <span className="font-medium">Search</span>
-              </a>
+              </div>
             </Link>
           </li>
           <li>
             <Link href="/library">
-              <a className={`flex items-center px-4 py-3 rounded-lg ${location === '/library' ? 'bg-white bg-opacity-10 text-white' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 transition-all'}`}>
+              <div className={`flex items-center px-4 py-3 rounded-lg ${location === '/library' ? 'bg-white bg-opacity-10 text-white' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 transition-all'}`}>
                 <i className="ri-album-fill mr-3 text-xl"></i>
                 <span className="font-medium">Your Library</span>
-              </a>
+              </div>
             </Link>
           </li>
           <li>
             <Link href="/liked-songs">
-              <a className={`flex items-center px-4 py-3 rounded-lg ${location === '/liked-songs' ? 'bg-white bg-opacity-10 text-white' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 transition-all'}`}>
+              <div className={`flex items-center px-4 py-3 rounded-lg ${location === '/liked-songs' ? 'bg-white bg-opacity-10 text-white' : 'text-gray-300 hover:bg-white hover:bg-opacity-10 transition-all'}`}>
                 <i className="ri-heart-fill mr-3 text-xl"></i>
                 <span className="font-medium">Liked Songs</span>
-              </a>
+              </div>
             </Link>
           </li>
         </ul>
@@ -84,7 +94,7 @@ const Sidebar: React.FC = () => {
         <div className="mt-8 px-6">
           <h2 className="text-gray-400 uppercase text-xs font-semibold tracking-wider">Playlists</h2>
           <ul className="mt-3 space-y-2">
-            {playlists.slice(0, 5).map((playlist) => (
+            {playlists.slice(0, 5).map((playlist: Playlist) => (
               <li key={playlist.id}>
                 <a href="#" className="block py-2 text-gray-300 hover:text-white transition-colors truncate">
                   {playlist.name}
