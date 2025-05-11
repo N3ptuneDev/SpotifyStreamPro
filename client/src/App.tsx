@@ -8,8 +8,6 @@ import LikedSongs from "@/pages/LikedSongs";
 import Sidebar from "@/components/Sidebar";
 import MusicPlayer from "@/components/MusicPlayer";
 import { useSpotify } from "./hooks/use-spotify-auth";
-import { SpotifyProvider } from "./context/SpotifyContext";
-import { PlayerProvider } from "./context/PlayerContext";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -101,13 +99,7 @@ function App() {
   // Initialize Spotify authentication
   useSpotify();
   
-  return (
-    <SpotifyProvider>
-      <PlayerProvider>
-        <Router />
-      </PlayerProvider>
-    </SpotifyProvider>
-  );
+  return <Router />;
 }
 
 export default App;

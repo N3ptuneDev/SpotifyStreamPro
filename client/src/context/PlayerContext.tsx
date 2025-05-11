@@ -38,19 +38,33 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [progress, setProgressState] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
   
+  // Add logging for debugging
+  useEffect(() => {
+    console.log("PlayerProvider mounted");
+    return () => console.log("PlayerProvider unmounted");
+  }, []);
+  
   // Poll for player state
   useEffect(() => {
-    if (!localStorage.getItem('spotify_token')) return;
+    if (!localStorage.getItem('spotify_token')) {
+      console.log("No Spotify token found, skipping player state polling");
+      return;
+    }
+    
+    console.log("Starting player state polling");
     
     const pollPlayerState = async () => {
       try {
         const state = await getPlayerState();
         if (state) {
+          console.log("Received player state:", state);
           setCurrentTrack(state.item);
           setIsPlaying(state.is_playing);
           setProgressState(state.progress_ms);
           setDuration(state.item?.duration_ms || 0);
           setVolumeState(state.device?.volume_percent || 70);
+        } else {
+          console.log("No active player state");
         }
       } catch (error) {
         console.error('Failed to get player state', error);
@@ -60,7 +74,10 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     pollPlayerState();
     const interval = setInterval(pollPlayerState, 5000);
     
-    return () => clearInterval(interval);
+    return () => {
+      console.log("Cleaning up player state polling");
+      clearInterval(interval);
+    };
   }, []);
   
   // Progress update interval
@@ -81,14 +98,21 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [isPlaying, duration]);
   
   const play = async (track?: Track) => {
+    console.log("Play called with track:", track);
     try {
       if (track) {
-        await playSong(track.uri);
+        console.log("Playing new track:", track.name, "with URI:", track.uri);
+        const response = await playSong(track.uri);
+        console.log("Play song response:", response);
         setCurrentTrack(track);
         setDuration(track.duration_ms);
         setProgressState(0);
       } else if (currentTrack) {
+        console.log("Resuming current track:", currentTrack.name);
         await playSong(currentTrack.uri);
+      } else {
+        console.log("No track provided and no current track");
+        return;
       }
       setIsPlaying(true);
     } catch (error) {

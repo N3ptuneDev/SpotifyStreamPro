@@ -8,7 +8,12 @@ import "./index.css";
 import { SpotifyProvider } from "./context/SpotifyContext";
 import { PlayerProvider } from "./context/PlayerContext";
 
-createRoot(document.getElementById("root")!).render(
+// For debugging
+console.log("Mounting application with context providers");
+
+const root = createRoot(document.getElementById("root")!);
+
+root.render(
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <SpotifyProvider>
