@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getPlayerState, pausePlayback, playSong, skipToNext, skipToPrevious, seekToPosition, setVolume } from '@/lib/spotify';
+import { useSpotifyPlayer } from '../hooks/use-spotify-player';
 
 export interface Track {
   id: string;
@@ -37,6 +38,9 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [volume, setVolumeState] = useState<number>(70);
   const [progress, setProgressState] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
+  
+  // Initialize Spotify player
+  const { player, deviceId, isReady, error: playerError } = useSpotifyPlayer();
   
   // Add logging for debugging
   useEffect(() => {
@@ -100,20 +104,40 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const play = async (track?: Track) => {
     console.log("Play called with track:", track);
     try {
+      // Update local state first
       if (track) {
-        console.log("Playing new track:", track.name, "with URI:", track.uri);
-        const response = await playSong(track.uri);
-        console.log("Play song response:", response);
         setCurrentTrack(track);
         setDuration(track.duration_ms);
         setProgressState(0);
-      } else if (currentTrack) {
-        console.log("Resuming current track:", currentTrack.name);
-        await playSong(currentTrack.uri);
-      } else {
-        console.log("No track provided and no current track");
-        return;
       }
+      
+      // Try to play using Spotify Web Playback SDK first
+      if (player && isReady && deviceId) {
+        console.log("Using Spotify Web Player SDK with device ID:", deviceId);
+        if (track) {
+          console.log("Playing new track via SDK:", track.name);
+          await playSong(track.uri, deviceId);
+          // Player state will update via events
+        } else if (currentTrack) {
+          console.log("Resuming current track via SDK:", currentTrack.name);
+          await player.resume();
+        }
+      } 
+      // Fallback to the regular API
+      else {
+        console.log("Using regular Spotify API (no SDK player available)");
+        if (track) {
+          console.log("Playing new track:", track.name, "with URI:", track.uri);
+          await playSong(track.uri);
+        } else if (currentTrack) {
+          console.log("Resuming current track:", currentTrack.name);
+          await playSong(currentTrack.uri);
+        } else {
+          console.log("No track provided and no current track");
+          return;
+        }
+      }
+      
       setIsPlaying(true);
     } catch (error) {
       console.error('Failed to play track', error);
@@ -122,7 +146,13 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   
   const pause = async () => {
     try {
-      await pausePlayback();
+      if (player && isReady) {
+        console.log("Pausing via SDK player");
+        await player.pause();
+      } else {
+        console.log("Pausing via regular API");
+        await pausePlayback();
+      }
       setIsPlaying(false);
     } catch (error) {
       console.error('Failed to pause playback', error);
@@ -131,7 +161,13 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   
   const next = async () => {
     try {
-      await skipToNext();
+      if (player && isReady) {
+        console.log("Skipping to next track via SDK player");
+        await player.nextTrack();
+      } else {
+        console.log("Skipping to next track via regular API");
+        await skipToNext();
+      }
       // Player state will update in the next polling cycle
     } catch (error) {
       console.error('Failed to skip to next track', error);
@@ -140,7 +176,13 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   
   const previous = async () => {
     try {
-      await skipToPrevious();
+      if (player && isReady) {
+        console.log("Skipping to previous track via SDK player");
+        await player.previousTrack();
+      } else {
+        console.log("Skipping to previous track via regular API");
+        await skipToPrevious();
+      }
       // Player state will update in the next polling cycle
     } catch (error) {
       console.error('Failed to skip to previous track', error);
@@ -149,7 +191,13 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   
   const setProgress = async (ms: number) => {
     try {
-      await seekToPosition(ms);
+      if (player && isReady) {
+        console.log("Seeking position via SDK player");
+        await player.seek(ms);
+      } else {
+        console.log("Seeking position via regular API");
+        await seekToPosition(ms);
+      }
       setProgressState(ms);
     } catch (error) {
       console.error('Failed to seek to position', error);
@@ -158,7 +206,13 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   
   const setPlayerVolume = async (volumePercent: number) => {
     try {
-      await setVolume(volumePercent);
+      if (player && isReady) {
+        console.log("Setting volume via SDK player");
+        await player.setVolume(volumePercent / 100); // SDK expects a value between 0 and 1
+      } else {
+        console.log("Setting volume via regular API");
+        await setVolume(volumePercent);
+      }
       setVolumeState(volumePercent);
     } catch (error) {
       console.error('Failed to set volume', error);

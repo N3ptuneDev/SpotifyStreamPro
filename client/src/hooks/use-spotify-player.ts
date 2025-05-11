@@ -70,14 +70,15 @@ export const useSpotifyPlayer = () => {
 
       // Ready
       spotifyPlayer.addListener('ready', ({ device_id }) => {
-        console.log('Ready with Device ID', device_id);
+        console.log('🎵 Spotify Web Player SDK Ready with Device ID', device_id);
+        console.log('➡️ You should now be able to play music through your browser!');
         setDeviceId(device_id);
         setIsReady(true);
       });
 
       // Not Ready
       spotifyPlayer.addListener('not_ready', ({ device_id }) => {
-        console.log('Device ID has gone offline', device_id);
+        console.log('⚠️ Spotify Web Player SDK - Device ID has gone offline', device_id);
         setIsReady(false);
       });
 
